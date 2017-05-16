@@ -120,26 +120,33 @@ void OGLWidget::updateOGL()
 
 void OGLWidget::Load2DTexture()
 {
-    glGenTextures(1, &VBOtexture);
+    //glGenTextures(1, &VBOtexture);
     glBindTexture(GL_TEXTURE_2D, VBOtexture);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, textureImage.width(), textureImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage.bits());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glBindTexture( GL_TEXTURE_2D, 0);
+    //glBindTexture( GL_TEXTURE_2D, 0);
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR)
+    {
+        QMessageBox msg;
+        msg.setText(QString::number(err));
+        msg.exec();
+    }
 }
 
 void OGLWidget::generateTextureImage()
 {
-    QImage *img = new QImage(Bin::X, Bin::Y, QImage::Format_RGB32);
+    QImage img(Bin::X, Bin::Y, QImage::Format_RGB32);
     for (int i = 0; i < Bin::X; ++i)
         for (int j = 0; j < Bin::Y; ++j)
         {
             int pixelNumber = i + j + Bin::X + layerNumber * Bin::X * Bin::Y;
-            (*img).setPixel(i, j, TransverFunction(Bin::array[pixelNumber]).rgb());
+            img.setPixel(i, j, TransverFunction(Bin::array[pixelNumber]).rgb());
         }
-    textureImage = *img;
+    textureImage = img;
 }
 
 void OGLWidget::DrawTexture()
