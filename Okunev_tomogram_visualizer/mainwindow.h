@@ -6,7 +6,6 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QSlider>
-#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -20,17 +19,20 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+signals:
+    void fileLoad();
+
 private slots:
     void OpenFile();
     void UseGPU();
     void currentLevelChanged(int currentValue);
     void minSliderChanged(int newMin);
     void residualSliderChanged(int newRes);
+    void updateFPS(int FPS);
 private:
     Ui::MainWindow *ui;
     QLabel* currentLevel;
     QLabel* countFPS;
-    QTimer* tmr;
 };
 
 #endif // MAINWINDOW_H

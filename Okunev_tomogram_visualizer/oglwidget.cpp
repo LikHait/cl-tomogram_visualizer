@@ -2,7 +2,7 @@
 #include "bin.h"
 #include <QMessageBox>
 #include <QString>
-#include <QSurface>
+#include <QImage>
 
 OGLWidget::OGLWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
@@ -18,6 +18,7 @@ QColor OGLWidget::TransverFunction(short value)
 {
     int newVal = clamp((value - min) * 255 / (max - min), 0, 255);
     return QColor::fromRgb(newVal, newVal, newVal);
+    //return QColor::fromRgb(255, 0, 255);
 }
 
 void OGLWidget::initializeGL()
@@ -26,7 +27,8 @@ void OGLWidget::initializeGL()
     glClearColor( 0.0f, 1.0f, 1.0f, 1.0f);
     glShadeModel(GL_SMOOTH);
     glMatrixMode(GL_PROJECTION);
-
+    frameTime.start();
+    idleTimerId = startTimer(0); //???
 }
 
 void OGLWidget::resizeGL(int width, int height)
@@ -38,8 +40,27 @@ void OGLWidget::resizeGL(int width, int height)
 
 void OGLWidget::paintGL()
 {
-    DrawQuads();
-   // SwapBuffers(???);
+    if (gpuChecked)
+    {
+        if (needReload)
+        {
+            generateTextureImage();
+            Load2DTexture();
+            needReload = false;
+        }
+        DrawTexture();
+    }
+    else
+    {
+        DrawQuads();
+    }
+    update();
+    ++frameCount;
+    if (frameTime.elapsed() >= 1000)
+    {
+        newFPS((int)(frameCount / ((double)frameTime.elapsed()/1000.0)));
+        frameCount = 0;
+    }
 }
 
 void OGLWidget::DrawQuads()
@@ -54,31 +75,42 @@ void OGLWidget::DrawQuads()
             //вершина 1
             value = Bin::array[x_coord + y_coord * Bin::X + layerNumber * Bin::X * Bin::Y];
             col =  TransverFunction(value);
-            glColor3i(col.red(), col.green(), col.blue());
+            glColor3f(col.redF(), col.greenF(), col.blueF());
             glVertex2i(x_coord, y_coord);
             //вершина 2
             value = Bin::array[x_coord + (y_coord + 1) * Bin::X + layerNumber * Bin::X * Bin::Y];
             col =  TransverFunction(value);
-            glColor3i(col.red(), col.green(), col.blue());
+            glColor3f(col.redF(), col.greenF(), col.blueF());
             glVertex2i(x_coord, y_coord + 1);
             //вершина 3
             value = Bin::array[x_coord + 1 + (y_coord + 1) * Bin::X + layerNumber * Bin::X * Bin::Y];
             col =  TransverFunction(value);
-            glColor3i(col.red(), col.green(), col.blue());
+            glColor3f(col.redF(), col.greenF(), col.blueF());
             glVertex2i(x_coord + 1, y_coord + 1);
             //вершина 4
             value = Bin::array[x_coord + 1 + y_coord * Bin::X + layerNumber * Bin::X * Bin::Y];
             col =  TransverFunction(value);
-            glColor3i(col.red(), col.green(), col.blue());
+            glColor3f(col.redF(), col.greenF(), col.blueF());
             glVertex2i(x_coord + 1, y_coord);
 
        }
     glEnd();
 }
 
+void OGLWidget::updateView()
+{
+    //BinLoad = true;
+    //resizeGL(this->width(), this->height());
+    glOrtho(0, Bin::X, 0, Bin::Y, -1, 1);
+    glViewport(0, 0, this->width(), this->height());
+    paintGL();
+    update();
+}
+
 void OGLWidget::levelChanged(int value)
 {
     layerNumber = value;
+    paintGL();
 }
 
 void OGLWidget::updateOGL()
@@ -86,4 +118,47 @@ void OGLWidget::updateOGL()
     paintGL();
 }
 
+void OGLWidget::Load2DTexture()
+{
+    glGenTextures(1, &VBOtexture);
+    glBindTexture(GL_TEXTURE_2D, VBOtexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, textureImage.width(), textureImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage.bits());
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture( GL_TEXTURE_2D, 0);
+}
+
+void OGLWidget::generateTextureImage()
+{
+    QImage *img = new QImage(Bin::X, Bin::Y, QImage::Format_RGB32);
+    for (int i = 0; i < Bin::X; ++i)
+        for (int j = 0; j < Bin::Y; ++j)
+        {
+            int pixelNumber = i + j + Bin::X + layerNumber * Bin::X * Bin::Y;
+            (*img).setPixel(i, j, TransverFunction(Bin::array[pixelNumber]).rgb());
+        }
+    textureImage = *img;
+}
+
+void OGLWidget::DrawTexture()
+{
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, VBOtexture);
+
+    glBegin(GL_QUADS);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex2i(0, 0);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex2i(0, Bin::Y);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex2i(Bin::X, Bin::Y);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex2i(Bin::X, 0);
+    glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+}
