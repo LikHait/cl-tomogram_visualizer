@@ -47,7 +47,7 @@ public:
        }
 public slots:
     void levelChanged(int value);
-    void updateOGL();
+    //void updateOGL();
     void updateView();
 
 signals:

@@ -27,7 +27,7 @@ private slots:
     void UseGPU();
     void currentLevelChanged(int currentValue);
     void minSliderChanged(int newMin);
-    void residualSliderChanged(int newRes);
+    void maxSliderChanged(int newMax);
     void updateFPS(int FPS);
 private:
     Ui::MainWindow *ui;

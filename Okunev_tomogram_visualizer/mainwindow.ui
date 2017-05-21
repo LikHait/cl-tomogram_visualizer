@@ -27,9 +27,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_residual">
+         <widget class="QLabel" name="label_max">
           <property name="text">
-           <string>Set Res</string>
+           <string>Set MAX</string>
           </property>
          </widget>
         </item>
@@ -45,7 +45,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="horizontalSlider_residual">
+         <widget class="QSlider" name="horizontalSlider_max">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -63,7 +63,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_current_residual">
+         <widget class="QLabel" name="label_current_max">
           <property name="text">
            <string/>
           </property>
@@ -216,17 +216,17 @@
    </hints>
   </connection>
   <connection>
-   <sender>horizontalSlider_residual</sender>
+   <sender>horizontalSlider_max</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>residualSliderChanged(int)</slot>
+   <slot>maxSliderChanged(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>497</x>
-     <y>73</y>
+     <x>560</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
-     <x>661</x>
+     <x>664</x>
      <y>70</y>
     </hint>
    </hints>
@@ -237,6 +237,6 @@
   <slot>UseGPU()</slot>
   <slot>currentLevelChanged(int)</slot>
   <slot>minSliderChanged(int)</slot>
-  <slot>residualSliderChanged(int)</slot>
+  <slot>maxSliderChanged(int)</slot>
  </slots>
 </ui>

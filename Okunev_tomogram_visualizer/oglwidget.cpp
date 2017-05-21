@@ -54,13 +54,15 @@ void OGLWidget::paintGL()
     {
         DrawQuads();
     }
-    update();
     ++frameCount;
     if (frameTime.elapsed() >= 1000)
     {
-        newFPS((int)(frameCount / ((double)frameTime.elapsed()/1000.0)));
+        //emit newFPS(frameCount);
+        emit newFPS((int)(frameCount / ((double)frameTime.elapsed()/1000.0)));
         frameCount = 0;
+        frameTime.restart();
     }
+    update();
 }
 
 void OGLWidget::DrawQuads()
@@ -101,6 +103,9 @@ void OGLWidget::updateView()
 {
     //BinLoad = true;
     //resizeGL(this->width(), this->height());
+    /*QMessageBox msg;
+    msg.setText("j");
+    msg.exec();     */
     glOrtho(0, Bin::X, 0, Bin::Y, -1, 1);
     glViewport(0, 0, this->width(), this->height());
     paintGL();
@@ -112,12 +117,12 @@ void OGLWidget::levelChanged(int value)
     layerNumber = value;
     paintGL();
 }
-
+/*
 void OGLWidget::updateOGL()
 {
     paintGL();
 }
-
+*/
 void OGLWidget::Load2DTexture()
 {
     //glGenTextures(1, &VBOtexture);

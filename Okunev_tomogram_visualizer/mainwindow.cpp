@@ -21,9 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->horizontalSlider_min->setValue(ui->openGLWidget->min);
     ui->label_current_min->setText(QString::number(ui->openGLWidget->min));
 
-    ui->horizontalSlider_residual->setRange(0, 4000);
-    ui->horizontalSlider_residual->setValue(ui->openGLWidget->max - ui->openGLWidget->min);
-    ui->label_current_residual->setText(QString::number(ui->openGLWidget->max - ui->openGLWidget->min));
+    ui->horizontalSlider_max->setRange(0, 2000);
+    ui->horizontalSlider_max->setValue(ui->openGLWidget->max);
+    ui->label_current_max->setText(QString::number(ui->openGLWidget->max));
 
     connect(this, SIGNAL(fileLoad()), ui->openGLWidget, SLOT(updateView()));
     connect(ui->openGLWidget, SIGNAL(newFPS(int)), this, SLOT(updateFPS(int)));
@@ -44,7 +44,7 @@ void MainWindow::OpenFile()
         Bin::readBIN(str);
         msgBox.setText("Ok. Opened " + str); //QString s = QString::number(i);
         ui->verticalSlider->setRange(0, Bin::Z - 1);
-        fileLoad();
+        emit fileLoad();
     }
     else
     {
@@ -81,16 +81,14 @@ void MainWindow::minSliderChanged(int newMin)
 {
     ui->openGLWidget->min = newMin;
     ui->label_current_min->setText(QString::number(ui->openGLWidget->min));
-    //ui->horizontalSlider_residual->setValue(ui->openGLWidget->max - ui->openGLWidget->min);
-    //ui->label_current_residual->setText(QString::number(ui->openGLWidget->max - ui->openGLWidget->min));
 
     ui->openGLWidget->needReload = true;
 }
 
-void MainWindow::residualSliderChanged(int newRes)
+void MainWindow::maxSliderChanged(int newMax)
 {
-    ui->openGLWidget->max = newRes + ui->openGLWidget->min;
-    ui->label_current_residual->setText(QString::number(newRes));
+    ui->openGLWidget->max = newMax;
+    ui->label_current_max->setText(QString::number(newMax));
 
     ui->openGLWidget->needReload = true;
 }
@@ -98,6 +96,7 @@ void MainWindow::residualSliderChanged(int newRes)
 void MainWindow::updateFPS(int FPS)
 {
     countFPS->setText("FPS: " + QString::number(FPS));
+
 }
 
 
