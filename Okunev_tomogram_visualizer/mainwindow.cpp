@@ -64,11 +64,6 @@ void MainWindow::UseGPU()
     {
         ui->openGLWidget->gpuChecked = false;
     }
-    /*
-    QMessageBox msgBox;
-    msgBox.setText(QString::number(ui->openGLWidget->min));
-    msgBox.exec();
-    */
 }
 
 void MainWindow::currentLevelChanged(int value)

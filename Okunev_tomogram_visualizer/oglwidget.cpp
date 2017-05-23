@@ -127,7 +127,7 @@ void OGLWidget::Load2DTexture()
 {
     //glGenTextures(1, &VBOtexture);
     glBindTexture(GL_TEXTURE_2D, VBOtexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, textureImage.width(), textureImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage.bits());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureImage.width(), textureImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage.bits());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -148,7 +148,7 @@ void OGLWidget::generateTextureImage()
     for (int i = 0; i < Bin::X; ++i)
         for (int j = 0; j < Bin::Y; ++j)
         {
-            int pixelNumber = i + j + Bin::X + layerNumber * Bin::X * Bin::Y;
+            int pixelNumber = i + j * Bin::X + layerNumber * Bin::X * Bin::Y;
             img.setPixel(i, j, TransverFunction(Bin::array[pixelNumber]).rgb());
         }
     textureImage = img;
