@@ -18,7 +18,6 @@ QColor OGLWidget::TransverFunction(short value)
 {
     int newVal = clamp((value - min) * 255 / (max - min), 0, 255);
     return QColor::fromRgb(newVal, newVal, newVal);
-    //return QColor::fromRgb(255, 0, 255);
 }
 
 void OGLWidget::initializeGL()
@@ -28,7 +27,7 @@ void OGLWidget::initializeGL()
     glShadeModel(GL_SMOOTH);
     glMatrixMode(GL_PROJECTION);
     frameTime.start();
-    idleTimerId = startTimer(0); //???
+    idleTimerId = startTimer(0);
 }
 
 void OGLWidget::resizeGL(int width, int height)
@@ -57,7 +56,6 @@ void OGLWidget::paintGL()
     ++frameCount;
     if (frameTime.elapsed() >= 1000)
     {
-        //emit newFPS(frameCount);
         emit newFPS((int)(frameCount / ((double)frameTime.elapsed()/1000.0)));
         frameCount = 0;
         frameTime.restart();
@@ -101,11 +99,6 @@ void OGLWidget::DrawQuads()
 
 void OGLWidget::updateView()
 {
-    //BinLoad = true;
-    //resizeGL(this->width(), this->height());
-    /*QMessageBox msg;
-    msg.setText("j");
-    msg.exec();     */
     glOrtho(0, Bin::X, 0, Bin::Y, -1, 1);
     glViewport(0, 0, this->width(), this->height());
     paintGL();
@@ -117,22 +110,15 @@ void OGLWidget::levelChanged(int value)
     layerNumber = value;
     paintGL();
 }
-/*
-void OGLWidget::updateOGL()
-{
-    paintGL();
-}
-*/
+
 void OGLWidget::Load2DTexture()
 {
-    //glGenTextures(1, &VBOtexture);
     glBindTexture(GL_TEXTURE_2D, VBOtexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureImage.width(), textureImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage.bits());
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //glBindTexture( GL_TEXTURE_2D, 0);
     GLenum err = glGetError();
     if (err != GL_NO_ERROR)
     {
